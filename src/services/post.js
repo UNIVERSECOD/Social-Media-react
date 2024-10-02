@@ -3,8 +3,8 @@ import axios from "axios";
 
 export async function getPosts() {
     try {
-        const data =await axios(`${BASE_URL}`/posts)
-        return data 
+        const response =await axios(`${BASE_URL}posts`)
+        return response.data;
     }catch(error){
         console.error(error);
         return {}
