@@ -21,12 +21,16 @@ const Heading = () => {
   const total = data?.pages?.[0].total ?? 0 
   return (
     <div className='flex justify-between items-center'>
-      <h1 className='font-bold text-muted-foreground text-3xl tracking-widest'>Posts</h1>
       <div>
-<p className='text-xs'>
+
+      <h1 className='font-bold text-muted-foreground text-3xl tracking-widest'>Posts</h1>
+      <p className='text-xs'>
   Total Posts: {" "}
   <span className='font-semibold text-muted-foreground'>{total}</span>
-</p>        <CreatePostDialog />
+</p>  
+      </div>
+      <div>
+      <CreatePostDialog />
       </div>
     </div>
   )
