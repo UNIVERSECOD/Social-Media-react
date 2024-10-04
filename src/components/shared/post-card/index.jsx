@@ -1,10 +1,13 @@
 import { Skeleton } from '@/components/ui/skeleton'
+import { cn } from '@/lib/utils';
 import { AvatarIcon } from '@radix-ui/react-icons';
 import moment from 'moment';
 import React from 'react'
 
 const PostCard = ({post}) => {
-    const {image, content, tags, title, liked, createdAt  } = post;
+    console.log(post);
+    
+    const {image, content, tags, title, liked, createdAt, comments = []  } = post;
 
     const time = moment(createdAt).fromNow()
     const commentCount = comments.length;
