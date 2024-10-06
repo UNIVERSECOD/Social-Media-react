@@ -1,136 +1,173 @@
-import React from 'react'
+import React from "react";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-  } from "@/components/ui/dialog"
-import { Button } from '@/components/ui/button'
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
- 
-import { z } from "zod"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
- 
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {  createPosts } from "@/services/post";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { POST_QUERY_KEY } from "@/constants/query-keys";
+import { useRef } from "react";
+
 const formSchema = z.object({
   title: z.string().min(3),
   content: z.string().min(4),
   tags: z.string(),
   image: z.instanceof(File, {
-    message: "You must upload an image"
-  })
-
-})
+    message: "You must upload an image",
+  }),
+});
 const CreatePostDialog = () => {
-  const form = useForm ({
+  const queryClient = useQueryClient();
+  const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: "" ,
-      content: "" ,
-      tags: "" ,
+    defaultValues: {
+      title: "",
+      content: "",
+      tags: "",
       image: null,
+    }
+  });
+const closeButtonRef = useRef(null)
+  const {mutate, data, isPending} = useMutation({
+    mutationFn: createPosts,
+    onSuccess: () => {
+      // Invalidate and refetch
+      form.reset();
+      closeButtonRef.current.click();
+      queryClient.invalidateQueries({ queryKey: [POST_QUERY_KEY] }) //yeniden api ye post yaratmaq uchun request gonderir
+    },
   });
 
-    // 1.04.04 
-  //   const mutation = useMutation({
-  //   mutationFn: ,
-  //   onSuccess: () => {
-  //     // Invalidate and refetch
-  //     queryClient.invalidateQueries({ queryKey: ['todos'] })
-  //   },
-  // })
-
-
+  //mutation.mutate mutateni mutationun ichinden goturduyunden destructing eledeik {mutate}
+  // const {mutate} = useMutation destructing ichinde isPending IsError veziyyetleri elave etmek olur
 
   function onSubmit(values) {
+    const formData = new FormData();
+    formData.append("title", values.title)
+    formData.append("content", values.content)
+    formData.append("tags", values.tags)
+    formData.append("image", values.image)
+    mutate(formData);
+   }
 
-    console.log(values)
-  }
+  console.log(data);
+  
 
   return (
     <Dialog>
-  <DialogTrigger asChild>
-    <Button size="sm">
-Create Post
-      </Button>
+      <DialogTrigger asChild>
+        <Button size="sm">Create Post</Button>
+
+
+        
       </DialogTrigger>
-  <DialogContent className="w-[360px]">
-    <DialogHeader>
-      <DialogTitle>Create Post</DialogTitle>
-     
-    </DialogHeader>
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Post Title</FormLabel>
-              <FormControl>
-                <Input placeholder="Type here..." {...field} />
-              </FormControl>
+      <DialogContent className="w-[360px]">
+        <DialogHeader>
+          <DialogTitle>Create Post</DialogTitle>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Post Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Type here..." {...field} />
+                  </FormControl>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="content"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Content</FormLabel>
-              <FormControl>
-                <Input placeholder="Type here..." {...field} />
-              </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="content"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Content</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Type here..." {...field} />
+                  </FormControl>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="tag"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Tags</FormLabel>
-              <FormControl>
-                <Input placeholder="Tag1, Tag2" {...field} />
-              </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="tags"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tags</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Tag1, Tag2" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Image</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          form.setValue("image", file);
+                          form.clearErrors("image");
+                        }
+                      }}
+                    />
+                    {/* {...field} */}
+                  </FormControl>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="image"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Image</FormLabel>
-              <FormControl>
-                <Input  type="file" onChange ={(e) => {
-                  const file = e.target.files[0];
-                  if(file){
-                    form.setValue("image", file);
-                    form.clearErrors("image")
-                  }
-                } } /> 
-                {/* {...field} */}
-              </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogClose asChild>
+            <Button
+            ref = {closeButtonRef}
+            variant="secondary" 
+            disabled={isPending} 
+            type="button" 
+            className="ml-2"
+            >
+              Cancel
+              </Button>
+              </DialogClose>
+            <Button disabled={isPending} type="submit" >Submit</Button>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
-  </DialogContent>
-</Dialog>
-  )
-}
-
-export default CreatePostDialog
+export default CreatePostDialog;
