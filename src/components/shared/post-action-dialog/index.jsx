@@ -5,7 +5,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,7 +14,6 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,7 +23,9 @@ import { Input } from "@/components/ui/input";
 import {  createPosts } from "@/services/post";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { POST_QUERY_KEY } from "@/constants/query-keys";
-import { useRef } from "react";
+
+import { MODAL_TYPE } from "@/constants";
+import { useDialog } from "@/hooks/useDialog";
 
 const formSchema = z.object({
   title: z.string().min(3),
@@ -35,7 +35,8 @@ const formSchema = z.object({
     message: "You must upload an image",
   }),
 });
-const CreatePostDialog = () => {
+const PostActionDialog = () => {
+  const {type, isOpen, setIsOpen} = useDialog();
   const queryClient = useQueryClient();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -46,19 +47,22 @@ const CreatePostDialog = () => {
       image: null,
     }
   });
-const closeButtonRef = useRef(null)
+
+
   const {mutate, data, isPending} = useMutation({
     mutationFn: createPosts,
     onSuccess: () => {
+      setIsOpen(false);
       // Invalidate and refetch
       form.reset();
-      closeButtonRef.current.click();
       queryClient.invalidateQueries({ queryKey: [POST_QUERY_KEY] }) //yeniden api ye post yaratmaq uchun request gonderir
     },
   });
 
   //mutation.mutate mutateni mutationun ichinden goturduyunden destructing eledeik {mutate}
   // const {mutate} = useMutation destructing ichinde isPending IsError veziyyetleri elave etmek olur
+  const isEdit = type === MODAL_TYPE.EDIT;
+
 
   function onSubmit(values) {
     const formData = new FormData();
@@ -73,16 +77,10 @@ const closeButtonRef = useRef(null)
   
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button size="sm">Create Post</Button>
-
-
-        
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="w-[360px]">
         <DialogHeader>
-          <DialogTitle>Create Post</DialogTitle>
+          <DialogTitle>{ isEdit ? "Edit Post" : "Create Post"}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
@@ -153,7 +151,6 @@ const closeButtonRef = useRef(null)
             />
             <DialogClose asChild>
             <Button
-            ref = {closeButtonRef}
             variant="secondary" 
             disabled={isPending} 
             type="button" 
@@ -170,4 +167,4 @@ const closeButtonRef = useRef(null)
   );
 };
 
-export default CreatePostDialog;
+export default PostActionDialog;

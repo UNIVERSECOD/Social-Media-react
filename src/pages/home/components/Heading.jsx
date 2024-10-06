@@ -1,10 +1,13 @@
-import CreatePostDialog from '@/components/shared/create-post-dialog';
+
+import { Button } from '@/components/ui/button';
 import { POST_QUERY_KEY } from '@/constants/query-keys';
+import { useDialog } from '@/hooks/useDialog';
 import { getPosts } from '@/services/post';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import React from 'react'
 
 const Heading = () => {
+  const {setIsOpen} = useDialog()
   const {data} = useInfiniteQuery({
     queryKey: [POST_QUERY_KEY],
     queryFn: getPosts,
@@ -30,7 +33,7 @@ const Heading = () => {
 </p>  
       </div>
       <div>
-      <CreatePostDialog />
+        <Button size="sm" onClick={() => setIsOpen(true)}>Create Post</Button>
       </div>
     </div>
   )
