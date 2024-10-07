@@ -11,7 +11,7 @@ import { TrashIcon } from "lucide-react";
 import { useDialog } from "@/hooks/useDialog";
 import { MODAL_TYPE } from "@/constants";
 
-export const PostCardAction = () => {
+export const PostCardAction = ({post}) => {
     const {setIsOpen} = useDialog()
   return (
     <DropdownMenu>
@@ -39,7 +39,7 @@ export const PostCardAction = () => {
       <DropdownMenuContent>
         <DropdownMenuItem 
         onClick={()=>{
-            setIsOpen(true, MODAL_TYPE.EDIT)
+            setIsOpen(true, MODAL_TYPE.EDIT, post)
         }}
         className="flex gap-3 items-center">
           <Edit2Icon className="h-4 w-4" />

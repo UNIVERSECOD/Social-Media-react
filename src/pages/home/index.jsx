@@ -29,14 +29,13 @@ const HomePage = () => {
     queryFn: getPosts,
     initialPageParam: 1,
     getNextPageParam: (lastPage, pages, lastPageParam) => {
-      console.log(lastPage);
       const { total, page, limit } = lastPage;
       const hasMore = total > page * limit;
       return hasMore ? page + 1 : undefined;
     },
   });
   // const {page} = data sehvdi chunki ilk defe render gedende undefined olur
-console.log("isLoading", isLoading, "isFetching", isFetching, "fetching next page", isFetchingNextPage);
+// console.log("isLoading", isLoading, "isFetching", isFetching, "fetching next page", isFetchingNextPage);
 
   const { pages, pageParams } = data ?? {};
 

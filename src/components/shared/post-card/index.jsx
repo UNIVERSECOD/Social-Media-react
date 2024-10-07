@@ -6,7 +6,7 @@ import React from 'react'
 import { PostCardAction } from './Actions';
 
 const PostCard = ({post}) => {
-    console.log(post);
+
     
     const {image, content, tags, title, liked, createdAt, comments = []  } = post;
 
@@ -28,7 +28,7 @@ const PostCard = ({post}) => {
                         }
                     </div>
                 </div>
-                <PostCardAction />
+                <PostCardAction post={post} />
             </div> 
             <div className="mb-4">
                 <p className='text-gray-800'>{title}</p>
