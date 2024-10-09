@@ -34,4 +34,36 @@ export async function editPosts({id, data}) {
      }
  }
 
- export async function 
+ export async function deletePost({id}) {
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+     try {
+         const response =await axios.delete(`${BASE_URL}/posts/${id}`);
+         return response.data;
+     }catch(error){
+         console.error(error);
+         return {}
+     }
+ }
+
+ export async function likePost({id}) {
+    // await new Promise((resolve) => setTimeout(resolve, 2000))
+     try {
+         const response =await axios.post(`${BASE_URL}/posts/${id}/like`);
+         return response.data;
+     }catch(error){
+         console.error(error);
+         return {}
+     }
+ }
+
+ export async function dislikePost({id}) {
+    // await new Promise((resolve) => setTimeout(resolve, 2000))
+     try {
+         const response =await axios.post(`${BASE_URL}/posts/${id}/dislike`);
+         return response.data;
+     }catch(error){
+         console.error(error);
+         return {}
+     }
+ }
+

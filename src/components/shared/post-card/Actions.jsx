@@ -18,17 +18,19 @@ import { MODAL_TYPE } from "@/constants";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { POST_QUERY_KEY } from "@/constants/query-keys";
 import { ClipLoader } from "react-spinners";
+import { deletePost } from "@/services/post";
 
 export const PostCardAction = ({ post }) => {
   const { setIsOpen } = useDialog();
   const queryClient = useQueryClient();
-  const { mutate } = useMutation(({
-    mutationFn: deletePost,
+  const { mutate, isPending } = useMutation(({
+    mutationFn:deletePost,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [POST_QUERY_KEY] })
     }
   }))
 
+  
 
 
   return (

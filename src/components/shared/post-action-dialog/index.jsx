@@ -46,6 +46,8 @@ const PostActionDialog = () => {
   const [imagePreview, setImagePreview] = useState(null); // editde shekili deyishdirmek uchun tanimlama 
   const queryClient = useQueryClient();
   const isEdit = type === MODAL_TYPE.EDIT;
+
+  
   const form = useForm({
     resolver: zodResolver(getformSchema(isEdit)),
     defaultValues: {
